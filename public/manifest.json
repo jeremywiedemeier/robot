@@ -1,0 +1,12 @@
+{
+  "short_name": "",
+  "name": "",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone"
+}
