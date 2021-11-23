@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import Controller from "./components/Controller";
-import RobotAnimation from "./components/RobotAnimation";
+// import RobotAnimation from "./components/RobotAnimation";
 
 const App: React.FC = () => {
   return (
