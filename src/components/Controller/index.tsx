@@ -1,4 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { CONTROL_KEYS } from "../../resources";
+import { WebSocketContext } from "../../WebSocket";
+import WASDKeys from "./WASDKeys";
 
 const handleKeyDown =
   (
@@ -6,16 +9,13 @@ const handleKeyDown =
     socket: WebSocket | null
   ) =>
   (evt: KeyboardEvent) => {
-    if (["w", "a", "s", "d"].includes(evt.key))
+    if (CONTROL_KEYS.includes(evt.key))
       setActiveKeys((currentActiveKeys) => {
         if (currentActiveKeys.includes(evt.key)) {
           return currentActiveKeys;
         }
         const newActiveKeys = [...currentActiveKeys, evt.key];
-        if (socket) {
-          console.log(
-            `keydown ${evt.key}, sending active keys ${newActiveKeys.join()}`
-          );
+        if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(newActiveKeys.join());
         }
         return newActiveKeys;
@@ -28,15 +28,12 @@ const handleKeyUp =
     socket: WebSocket | null
   ) =>
   (evt: KeyboardEvent) => {
-    if (["w", "a", "s", "d"].includes(evt.key))
+    if (CONTROL_KEYS.includes(evt.key))
       setActiveKeys((currentActiveKeys) => {
         const newActiveKeys = currentActiveKeys.filter(
           (key) => key !== evt.key
         );
-        if (socket) {
-          console.log(
-            `keyup ${evt.key}, sending active keys ${newActiveKeys.join()}`
-          );
+        if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(newActiveKeys.join());
         }
         return newActiveKeys;
@@ -44,51 +41,26 @@ const handleKeyUp =
   };
 
 const Controller: React.FC = () => {
-  const socket = useRef<WebSocket | null>(null);
-
-  useEffect(() => {
-    console.log("opening websocket connection");
-    socket.current = new WebSocket("ws://nastberry:8765");
-    socket.current.onopen = () => {
-      console.log("websocket opened");
-    };
-    socket.current.onmessage = (evt) => {
-      console.log(evt.data);
-    };
-    socket.current.onclose = () => {
-      console.log("websocket closed");
-    };
-
-    return () => {
-      socket.current?.close();
-    };
-  }, []);
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
-
+  const { socket } = useContext(WebSocketContext);
   useEffect(() => {
-    console.log("adding event listeners");
-    document.addEventListener(
-      "keydown",
-      handleKeyDown(setActiveKeys, socket.current)
-    );
-    document.addEventListener(
-      "keyup",
-      handleKeyUp(setActiveKeys, socket.current)
-    );
+    document.addEventListener("keydown", handleKeyDown(setActiveKeys, socket));
+    document.addEventListener("keyup", handleKeyUp(setActiveKeys, socket));
 
     return () => {
       document.removeEventListener(
         "keydown",
-        handleKeyDown(setActiveKeys, socket.current)
+        handleKeyDown(setActiveKeys, socket)
       );
-      document.removeEventListener(
-        "keyup",
-        handleKeyUp(setActiveKeys, socket.current)
-      );
+      document.removeEventListener("keyup", handleKeyUp(setActiveKeys, socket));
     };
-  }, []);
+  }, [socket]);
 
-  return <div>{activeKeys}</div>;
+  return (
+    <div>
+      <WASDKeys activeKeys={activeKeys} />
+    </div>
+  );
 };
 
 export default Controller;
