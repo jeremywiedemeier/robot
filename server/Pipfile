@@ -5,8 +5,8 @@ name = "pypi"
 
 [packages]
 asyncio = "*"
-websockets = "*"
 smbus = "*"
+websockets = "*"
 
 [dev-packages]
 
