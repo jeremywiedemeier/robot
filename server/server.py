@@ -1,3 +1,4 @@
+import json
 import asyncio
 import websockets
 from controllers import *
@@ -7,40 +8,29 @@ port = 8765
 
 motor = Motor()
 
+
 async def move(websocket, path):
-  print("running move()")
-  async for message in websocket:
-    print("message: " + message)
+    async for message in websocket:
 
-    if ("s" in message):
-      # Move back
-      motor.move_back(1)
-      print("back")
+        input = json.loads(message)
 
-    elif ("a" in message):
-      # Move left
-      motor.move_left(1)
-      print("left")
+        motor.set_duty(
+            input["motor"]["fl"],
+            input["motor"]["bl"],
+            input["motor"]["fr"],
+            input["motor"]["br"],
+        )
 
-    elif ("d" in message):
-      # Move right
-      motor.move_right(1)
-      print("right")
-      
-    elif ("w" in message):
-      # Move forward
-      motor.move_forward(1)
-      print("forward")
+        await websocket.send(json.dumps({"motor": input["motor"]}))
 
-    elif (message == ""):
-      print("cancel")
-      motor.stop()
-
-    await websocket.send("sup: " + message)
 
 async def main():
-  print("starting server on port " + str(port))
-  async with websockets.serve(move, domain, port):
-    await asyncio.Future()
+    print("starting server on port " + str(port))
+    async with websockets.serve(move, domain, port):
+        await asyncio.Future()
 
-asyncio.run(main())
+
+try:
+    asyncio.run(main())
+except:
+    motor.stop()
