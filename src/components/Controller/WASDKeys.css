@@ -9,19 +9,21 @@
 }
 
 #wasd-keys .key {
-  border: 1px solid #ccc;
+  border: 1px solid var(--purp3);
+  background-color: var(--white);
+  color: var(--purp2);
   width: 60px;
   height: 60px;
   font-size: 30px;
   font-family: monospace;
   line-height: 60px;
   border-radius: 5px;
-  color: #999;
   display: inline-block;
   margin: 2px;
   text-align: center;
+  transition: all 0.2s;
 }
 #wasd-keys .key.active {
-  color: black;
-  border-color: #222;
+  color: var(--purp);
+  border-color: var(--purp);
 }

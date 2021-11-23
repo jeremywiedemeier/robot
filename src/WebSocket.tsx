@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext } from "react";
 import { useDispatch } from "react-redux";
 import { setTelemetry } from "./AppSlice";
 import { WEBSOCKET_URL } from "./resources";
@@ -19,8 +19,7 @@ const WebSocketProvider: React.FC = ({ children }) => {
       console.log("websocket opened");
     };
     socket.onmessage = (evt) => {
-      console.log(evt.data);
-      dispatch(setTelemetry(evt.data));
+      dispatch(setTelemetry(JSON.parse(evt.data)));
     };
     socket.onclose = () => {
       console.log("websocket closed");
