@@ -1,11 +1,13 @@
 {
-  "name": "messabout",
+  "name": "robot",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^1.6.2",
     "pixi.js": "^6.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-redux": "^7.2.6",
     "react-scripts": "4.0.2",
     "typescript": "^4.4.3"
   },

@@ -1,0 +1,27 @@
+#wasd-keys > div {
+  width: fit-content;
+}
+#wasd-keys > div:nth-of-type(2) {
+  padding: 0 0 0 15px;
+}
+#wasd-keys > div:nth-of-type(3) {
+  padding: 0 0 0 50px;
+}
+
+#wasd-keys .key {
+  border: 1px solid #ccc;
+  width: 60px;
+  height: 60px;
+  font-size: 30px;
+  font-family: monospace;
+  line-height: 60px;
+  border-radius: 5px;
+  color: #999;
+  display: inline-block;
+  margin: 2px;
+  text-align: center;
+}
+#wasd-keys .key.active {
+  color: black;
+  border-color: #222;
+}
