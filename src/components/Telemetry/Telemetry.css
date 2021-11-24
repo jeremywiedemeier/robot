@@ -1,11 +1,25 @@
 #telemetry {
-  flex: 1 0;
+  flex: 3 0;
+  align-self: flex-end;
 }
 #robot-wrapper {
   width: 260px;
   height: 360px;
   position: relative;
 }
+
+#robot-wrapper #head {
+  border-bottom: 2px solid var(--purp2);
+  height: 200px;
+  width: 150px;
+  clip-path: polygon(5% 0, 95% 0, 70% 100%, 30% 100%);
+  background: var(--purp4);
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform-origin: bottom;
+}
+
 #robot-wrapper .wheel {
   width: 60px;
   height: 90px;
@@ -34,5 +48,5 @@
   height: 50%;
   background-color: #d6c1f2;
   transform-origin: bottom;
-  transition: transform 0.1s;
+  transition: transform 0.15s;
 }

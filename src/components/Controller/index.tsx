@@ -5,97 +5,138 @@ import WASDKeys from "./WASDKeys";
 
 import "./Controller.css";
 
+const controlStateToInput = (controlState: ControlState): Input => {
+  let motor: Input["motor"] = { fl: 0, fr: 0, bl: 0, br: 0 };
+
+  if (controlState.activeKeys.includes("s")) {
+    motor = { fl: -1000, fr: -1000, bl: -1000, br: -1000 };
+  } else if (controlState.activeKeys.includes("a")) {
+    motor = { fl: -500, fr: 2000, bl: -500, br: 2000 };
+  } else if (controlState.activeKeys.includes("d")) {
+    motor = { fl: 2000, fr: -500, bl: 2000, br: -500 };
+  } else if (controlState.activeKeys.includes("w")) {
+    motor = { fl: 1000, fr: 1000, bl: 1000, br: 1000 };
+  }
+
+  const servo: Input["servo"] = { x: controlState.servo.x };
+
+  return { motor, servo };
+};
+
 const handleKeyDown =
   (
-    setActiveKeys: React.Dispatch<React.SetStateAction<string[]>>,
-    activeKeysToControl: (keys: string[]) => Input,
+    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
     socket: WebSocket | null
   ) =>
   (evt: KeyboardEvent) => {
     if (CONTROL_KEYS.includes(evt.key))
-      setActiveKeys((currentActiveKeys) => {
-        // If key is already in activeKeys, do nothing
-        if (currentActiveKeys.includes(evt.key)) return currentActiveKeys;
+      setControlState((currentControlState) => {
+        let newControlState: ControlState = { ...currentControlState };
 
-        const newActiveKeys = [...currentActiveKeys, evt.key];
+        // For movement controls,
+        if (["w", "a", "s", "d"].includes(evt.key)) {
+          // If duplicate, ignore state change and break
+          if (currentControlState.activeKeys.includes(evt.key))
+            return currentControlState;
+
+          // Else add movement control to activeKeys
+          newControlState = {
+            ...currentControlState,
+            activeKeys: [...currentControlState.activeKeys, evt.key],
+          };
+        }
+
+        // For servo controls, adjust angle and append to active keys
+        else if (["q", "e"].includes(evt.key)) {
+          newControlState = {
+            ...currentControlState,
+            servo: {
+              x: Math.max(
+                Math.min(
+                  currentControlState.servo.x + (evt.key === "q" ? -5 : 5),
+                  120
+                ),
+                60
+              ),
+            },
+            activeKeys: currentControlState.activeKeys.includes(evt.key)
+              ? currentControlState.activeKeys
+              : [...currentControlState.activeKeys, evt.key],
+          };
+        }
 
         if (socket && socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify(activeKeysToControl(newActiveKeys)));
+          socket.send(JSON.stringify(controlStateToInput(newControlState)));
         }
-        return newActiveKeys;
+
+        return newControlState;
       });
   };
 
 const handleKeyUp =
   (
-    setActiveKeys: React.Dispatch<React.SetStateAction<string[]>>,
-    activeKeysToControl: (keys: string[]) => Input,
+    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
     socket: WebSocket | null
   ) =>
   (evt: KeyboardEvent) => {
     if (CONTROL_KEYS.includes(evt.key))
-      setActiveKeys((currentActiveKeys) => {
-        const newActiveKeys = currentActiveKeys.filter(
-          (key) => key !== evt.key
-        );
+      setControlState((currentControlState) => {
+        const newControlState = {
+          ...currentControlState,
+          activeKeys: currentControlState.activeKeys.filter(
+            (key) => key !== evt.key
+          ),
+        };
+
         if (socket && socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify(activeKeysToControl(newActiveKeys)));
+          socket.send(JSON.stringify(controlStateToInput(newControlState)));
         }
-        return newActiveKeys;
+        return newControlState;
       });
   };
 
 const Controller: React.FC = () => {
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [controlState, setControlState] = useState<ControlState>({
+    activeKeys: [],
+    servo: { x: 90 },
+  });
+
   const { socket } = useContext(WebSocketContext);
 
   useEffect(() => {
-    const activeKeysToControl = (keys: string[]): Input => {
-      let motor: Input["motor"] = { fl: 0, fr: 0, bl: 0, br: 0 };
-
-      if (keys.includes("s")) {
-        motor = { fl: -1000, fr: -1000, bl: -1000, br: -1000 };
-      } else if (keys.includes("a")) {
-        motor = { fl: -500, fr: 2000, bl: -500, br: 2000 };
-      } else if (keys.includes("d")) {
-        motor = { fl: 2000, fr: -500, bl: 2000, br: -500 };
-      } else if (keys.includes("w")) {
-        motor = { fl: 1000, fr: 1000, bl: 1000, br: 1000 };
-      }
-
-      return { motor };
-    };
-
     document.addEventListener(
       "keydown",
-      handleKeyDown(setActiveKeys, activeKeysToControl, socket)
+      handleKeyDown(setControlState, socket)
     );
-    document.addEventListener(
-      "keyup",
-      handleKeyUp(setActiveKeys, activeKeysToControl, socket)
-    );
+    document.addEventListener("keyup", handleKeyUp(setControlState, socket));
 
     return () => {
       document.removeEventListener(
         "keydown",
-        handleKeyDown(setActiveKeys, activeKeysToControl, socket)
+        handleKeyDown(setControlState, socket)
       );
       document.removeEventListener(
         "keyup",
-        handleKeyUp(setActiveKeys, activeKeysToControl, socket)
+        handleKeyUp(setControlState, socket)
       );
     };
   }, [socket]);
 
   return (
     <div id="controller">
-      <WASDKeys activeKeys={activeKeys} />
+      <WASDKeys activeKeys={controlState.activeKeys} />
     </div>
   );
 };
 
 interface Input {
   motor: { fl: number; fr: number; bl: number; br: number };
+  servo: { x: number };
+}
+
+interface ControlState {
+  activeKeys: string[];
+  servo: { x: number };
 }
 
 export default Controller;
