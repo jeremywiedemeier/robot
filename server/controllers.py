@@ -61,9 +61,6 @@ class Motor:
         self.control_right_upper_wheel(-constrain_duty(duty3, 4095))
         self.control_right_lower_wheel(-constrain_duty(duty4, 4095))
 
-    def stop(self):
-        self.set_duty(0, 0, 0, 0)
-
 
 class Servo:
     def __init__(self):

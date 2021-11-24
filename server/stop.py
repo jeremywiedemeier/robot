@@ -2,4 +2,4 @@ from controllers import *
 
 motor = Motor()
 
-motor.stop()
+motor.set_duty(0, 0, 0, 0)
