@@ -4,9 +4,13 @@
 }
 
 :root {
-  --white: #F4F0FF;
+  --white: #f4f0ff;
   --black: #333333;
   --purp: #533489;
+  --purp2: #bb9ae6;
+  --purp3: #d6c1f2;
+  --pink: #fdf0ff;
+  --pink2: #f2dcf5;
 }
 
 body, html, #root {

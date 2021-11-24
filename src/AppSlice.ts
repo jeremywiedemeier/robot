@@ -6,17 +6,17 @@ import { RootState } from "./store";
 interface AppState {
   telemetry: {
     motor: {
-      fl: number | undefined;
-      fr: number | undefined;
-      bl: number | undefined;
-      br: number | undefined;
+      fl: number;
+      fr: number;
+      bl: number;
+      br: number;
     };
   };
 }
 
 const initialState: AppState = {
   telemetry: {
-    motor: { fl: undefined, fr: undefined, bl: undefined, br: undefined },
+    motor: { fl: 0, fr: 0, bl: 0, br: 0 },
   },
 };
 
