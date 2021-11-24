@@ -7,6 +7,7 @@ domain = "192.168.0.10"
 port = 8765
 
 motor = Motor()
+servo = Servo()
 
 
 async def move(websocket, path):
@@ -21,7 +22,9 @@ async def move(websocket, path):
             input["motor"]["br"],
         )
 
-        await websocket.send(json.dumps({"motor": input["motor"]}))
+        servo.set_servo_pwm("0", max(min(input["servo"]["x"], 120), 60))
+
+        await websocket.send(json.dumps({"motor": input["motor"], "servo": input["servo"]}))
 
 
 async def main():
