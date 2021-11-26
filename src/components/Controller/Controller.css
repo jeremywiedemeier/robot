@@ -1,4 +1,5 @@
 #controller {
+  flex: 2 0;
   background-color: var(--pink);
-  border-bottom: 1px solid var(--pink2);
+  border-right: 1px solid var(--pink2);
 }
