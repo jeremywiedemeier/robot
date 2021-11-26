@@ -1,36 +1,54 @@
 import time
-import RPi.GPIO as GPIO
-from PCA9685 import PCA9685
+import lgpio
 
 
 class Ultrasonic:
     def __init__(self):
-        GPIO.setwarnings(False)
         self.trigger_pin = 27
         self.echo_pin = 22
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.trigger_pin, GPIO.OUT)
-        GPIO.setup(self.echo_pin, GPIO.IN)
+        self.handle = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(self.handle, self.trigger_pin)
+        lgpio.gpio_claim_output(self.handle, self.echo_pin)
+        lgpio.gpio_write(self.handle, self.trigger_pin, 0)
 
-    def send_trigger_pulse(self):
-        GPIO.output(self.trigger_pin, True)
-        time.sleep(0.00015)
-        GPIO.output(self.trigger_pin, False)
+    def close_pins(self):
+        lgpio.gpio_write(self.handle, self.trigger_pin, 0)
 
-    def wait_for_echo(self, value, timeout):
+    def wait_for_echo(self, timeout):
         count = timeout
-        while GPIO.input(self.echo_pin) != value and count > 0:
+        while lgpio.gpio_read(self.handle, self.echo_pin) == False and count > 0:
             count = count - 1
+        print("count", count)
 
     def get_distance(self):
         distance_cm = [0, 0, 0, 0, 0]
 
-        for i in range(3):
-            self.send_trigger_pulse()
-            self.wait_for_echo(True, 10000)
+        for i in range(1):
+
+            # Send trigger pulse
+            lgpio.gpio_write(self.handle, self.trigger_pin, 1)
+            time.sleep(0.00015)
+            lgpio.gpio_write(self.handle, self.trigger_pin, 0)
+
             start = time.time()
-            self.wait_for_echo(False, 10000)
+            # Countdown too fast?
+            self.wait_for_echo(10000)
             finish = time.time()
+
+            print("time: ", finish - start)
+
             distance_cm[i] = (finish - start) / 0.000058
 
-        return int(sorted(distance_cm)[2])
+        return distance_cm
+
+        # Return median value
+        # return int(sorted(distance_cm)[2])
+
+
+if __name__ == "__main__":
+    ultrasonic = Ultrasonic()
+    try:
+        print(ultrasonic.get_distance())
+        ultrasonic.close_pins()
+    except:
+        ultrasonic.close_pins()
