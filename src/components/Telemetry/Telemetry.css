@@ -23,7 +23,7 @@
 #robot-wrapper .wheel {
   width: 60px;
   height: 90px;
-  border: 1px solid #d6c1f2;
+  border: 1px solid var(--purp2);
   border-radius: 5px;
   position: absolute;
 }
@@ -49,4 +49,18 @@
   background-color: #d6c1f2;
   transform-origin: bottom;
   transition: transform 0.15s;
+}
+
+#robot-wrapper #buzzer img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 48px;
+  width: 48px;
+  filter: invert(82%) sepia(11%) saturate(1697%) hue-rotate(206deg) brightness(102%) contrast(92%);
+  transition: filter 0.1s;
+}
+#robot-wrapper #buzzer img.active {
+  filter: invert(36%) sepia(30%) saturate(978%) hue-rotate(220deg) brightness(91%) contrast(90%);
 }

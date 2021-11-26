@@ -14,6 +14,9 @@ interface AppState {
     servo: {
       x: number;
     };
+    buzzer: {
+      active: boolean;
+    };
   };
 }
 
@@ -21,6 +24,7 @@ const initialState: AppState = {
   telemetry: {
     motor: { fl: 0, fr: 0, bl: 0, br: 0 },
     servo: { x: 90 },
+    buzzer: { active: false },
   },
 };
 

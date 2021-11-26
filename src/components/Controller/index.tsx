@@ -20,7 +20,11 @@ const controlStateToInput = (controlState: ControlState): Input => {
 
   const servo: Input["servo"] = { x: controlState.servo.x };
 
-  return { motor, servo };
+  const buzzer: Input["buzzer"] = {
+    active: controlState.activeKeys.includes("c"),
+  };
+
+  return { motor, servo, buzzer };
 };
 
 const handleKeyDown =
@@ -33,21 +37,16 @@ const handleKeyDown =
       setControlState((currentControlState) => {
         let newControlState: ControlState = { ...currentControlState };
 
-        // For movement controls,
-        if (["w", "a", "s", "d"].includes(evt.key)) {
-          // If duplicate, ignore state change and break
-          if (currentControlState.activeKeys.includes(evt.key))
-            return currentControlState;
-
-          // Else add movement control to activeKeys
-          newControlState = {
-            ...currentControlState,
-            activeKeys: [...currentControlState.activeKeys, evt.key],
-          };
+        // For movement controls, if duplicate, ignore state change and break
+        if (
+          ["w", "a", "s", "d"].includes(evt.key) &&
+          currentControlState.activeKeys.includes(evt.key)
+        ) {
+          return currentControlState;
         }
 
-        // For servo controls, adjust angle and append to active keys
-        else if (["q", "e"].includes(evt.key)) {
+        // For servo controls, adjust angle
+        if (["q", "e"].includes(evt.key)) {
           newControlState = {
             ...currentControlState,
             servo: {
@@ -59,11 +58,15 @@ const handleKeyDown =
                 60
               ),
             },
-            activeKeys: currentControlState.activeKeys.includes(evt.key)
-              ? currentControlState.activeKeys
-              : [...currentControlState.activeKeys, evt.key],
           };
         }
+
+        // Append keydown to activekeys if needed
+        newControlState.activeKeys = currentControlState.activeKeys.includes(
+          evt.key
+        )
+          ? currentControlState.activeKeys
+          : [...currentControlState.activeKeys, evt.key];
 
         if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify(controlStateToInput(newControlState)));
@@ -81,6 +84,7 @@ const handleKeyUp =
   (evt: KeyboardEvent) => {
     if (CONTROL_KEYS.includes(evt.key))
       setControlState((currentControlState) => {
+        // Update activekeys and send
         const newControlState = {
           ...currentControlState,
           activeKeys: currentControlState.activeKeys.filter(
@@ -132,6 +136,7 @@ const Controller: React.FC = () => {
 interface Input {
   motor: { fl: number; fr: number; bl: number; br: number };
   servo: { x: number };
+  buzzer: { active: boolean };
 }
 
 interface ControlState {
