@@ -1,9 +1,12 @@
 import sys
 from controllers import *
+from sensors import *
 
 if __name__ == "__main__":
     servo = Servo()
     motor = Motor()
+    ultrasonic = Ultrasonic()
+    buzzer = Buzzer()
 
     if sys.argv[1] == "servo":
         try:
@@ -45,6 +48,19 @@ if __name__ == "__main__":
 
         except:
             motor.set_duty(0, 0, 0, 0)
+
+    elif sys.argv[1] == "ultrasonic":
+      try:
+        print("hi")
+      except:
+        print("hi")
+        
+    elif sys.argv[1] == "buzzer":
+      try:
+        buzzer.beep()
+        buzzer.stop()
+      except:
+        buzzer.stop()
 
     elif sys.argv[1] == "avoid":
         try:
@@ -109,5 +125,5 @@ if __name__ == "__main__":
             #         self.run_motor(L,M,R)
 
         except:
-            PWM.set_duty(0, 0, 0, 0)
-            ultrasonic.pwm_S.setServoPwm("0", 90)
+          motor.set_duty(0, 0, 0, 0)
+

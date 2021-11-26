@@ -8,13 +8,15 @@ port = 8765
 
 motor = Motor()
 servo = Servo()
+buzzer = Buzzer()
 
 
-async def move(websocket, path):
+async def control(websocket, path):
     async for message in websocket:
 
         input = json.loads(message)
 
+        ### motor ###
         motor.set_duty(
             input["motor"]["fl"],
             input["motor"]["bl"],
@@ -22,18 +24,35 @@ async def move(websocket, path):
             input["motor"]["br"],
         )
 
+        ### servo ###
         servo.set_servo_pwm("0", max(min(input["servo"]["x"], 120), 60))
 
-        await websocket.send(json.dumps({"motor": input["motor"], "servo": input["servo"]}))
+        ### buzzer ###
+        if input["buzzer"]["active"] == True:
+            buzzer.play()
+        else:
+            buzzer.pause()
+
+        await websocket.send(
+            json.dumps(
+                {
+                    "motor": input["motor"],
+                    "servo": input["servo"],
+                    "buzzer": input["buzzer"],
+                }
+            )
+        )
 
 
 async def main():
     print("starting server on port " + str(port))
-    async with websockets.serve(move, domain, port):
+    async with websockets.serve(control, domain, port):
         await asyncio.Future()
 
 
 try:
     asyncio.run(main())
 except:
-    motor.stop()
+    motor.set_duty(0, 0, 0, 0)
+    servo.center()
+    buzzer.stop()

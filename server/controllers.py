@@ -1,4 +1,5 @@
 import time
+import lgpio
 from PCA9685 import PCA9685
 
 
@@ -91,3 +92,25 @@ class Servo:
     def center(self):
         self.set_servo_pwm("0", 90)
         self.set_servo_pwm("1", 90)
+
+class Buzzer:
+  def __init__(self):
+    self.buzzer_pin = 17
+    self.handle = lgpio.gpiochip_open(0)
+    lgpio.gpio_claim_output(self.handle, self.buzzer_pin)
+    lgpio.gpio_write(self.handle, self.buzzer_pin, 0)
+  
+  def beep(self):
+    lgpio.gpio_write(self.handle, self.buzzer_pin, 1)
+    time.sleep(0.01)
+    lgpio.gpio_write(self.handle, self.buzzer_pin, 0)
+  
+  def play(self):
+    lgpio.gpio_write(self.handle, self.buzzer_pin, 1)
+  
+  def pause(self):
+    lgpio.gpio_write(self.handle, self.buzzer_pin, 0)
+
+  def stop(self):
+    lgpio.gpio_write(self.handle, self.buzzer_pin, 0)
+    lgpio.gpiochip_close(self.handle)
