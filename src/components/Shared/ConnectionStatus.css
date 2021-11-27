@@ -1,0 +1,19 @@
+#connection-status img {
+  height: 40px;
+  width: 40px;
+
+  /* purp2 */
+  filter: invert(81%) sepia(13%) saturate(6326%) hue-rotate(203deg) brightness(94%) contrast(91%);
+  transition: filter 0.2s;
+}
+#connection-status:not(.closed) {
+  pointer-events: none;
+}
+
+#connection-status.connecting img {
+  animation: blink 2s linear infinite;
+}
+#connection-status.closed img {
+  /* var(--red) */
+  filter: invert(37%) sepia(73%) saturate(3819%) hue-rotate(337deg) brightness(107%) contrast(107%);
+}

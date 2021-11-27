@@ -1,14 +1,18 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectTelemetry } from "../../AppSlice";
+
 import Wheel from "./Wheel";
 import Head from "./Head";
+import Buzzer from "./Buzzer";
+import ConnectionStatus from "../Shared/ConnectionStatus";
+
+import { selectTelemetry } from "../../AppSlice";
 
 import "./Telemetry.css";
-import Buzzer from "./Buzzer";
 
 const Telemetry: React.FC = () => {
   const { motor, servo, buzzer } = useSelector(selectTelemetry);
+
   return (
     <div id="telemetry">
       <div id="robot-wrapper">
@@ -17,6 +21,7 @@ const Telemetry: React.FC = () => {
         <Wheel duty={motor.bl} />
         <Wheel duty={motor.br} />
         <Head angle={servo.x} />
+        <ConnectionStatus />
         <Buzzer active={buzzer.active} />
       </div>
     </div>

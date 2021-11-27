@@ -1,7 +1,8 @@
 import React from "react";
-import "./App.css";
 import Controller from "./components/Controller";
 import Telemetry from "./components/Telemetry";
+
+import "./App.css";
 
 const App: React.FC = () => {
   return (

@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 
 interface AppState {
+  socketReadyState: "connecting" | "open" | "closed";
   telemetry: {
     motor: {
       fl: number;
@@ -21,6 +22,7 @@ interface AppState {
 }
 
 const initialState: AppState = {
+  socketReadyState: "connecting",
   telemetry: {
     motor: { fl: 0, fr: 0, bl: 0, br: 0 },
     servo: { x: 90 },
@@ -38,12 +40,22 @@ export const AppSlice = createSlice({
     ) => {
       state.telemetry = action.payload;
     },
+    setSocketReadyState: (
+      state: AppState,
+      action: PayloadAction<AppState["socketReadyState"]>
+    ) => {
+      state.socketReadyState = action.payload;
+    },
   },
 });
 
-export const { setTelemetry } = AppSlice.actions;
+export const { setTelemetry, setSocketReadyState } = AppSlice.actions;
 
 export const selectTelemetry = (state: RootState): AppState["telemetry"] =>
   state.app.telemetry;
+
+export const selectSocketReadyState = (
+  state: RootState
+): AppState["socketReadyState"] => state.app.socketReadyState;
 
 export default AppSlice.reducer;

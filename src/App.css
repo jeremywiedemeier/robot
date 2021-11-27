@@ -12,10 +12,16 @@
   display: flex;
   position: absolute;
 }
-#app > div {
-  padding: 20px 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+@media only screen and (max-width: 650px) {
+  #app {
+    max-height: none;
+    flex-wrap: wrap-reverse;
+  }
+}
+
+@media only screen and (max-height: 800) {
+  #telemetry {
+    display: none !important;
+  }
 }

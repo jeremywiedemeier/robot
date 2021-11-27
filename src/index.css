@@ -7,11 +7,29 @@
   --white: #f4f0ff;
   --black: #333333;
   --purp: #533489;
+
+  /* filter: invert(81%) sepia(13%) saturate(6326%) hue-rotate(203deg) brightness(94%) contrast(91%); */
   --purp2: #bb9ae6;
   --purp3: #d6c1f2;
   --purp4: #e5d8f7;
+  --purp5: #ccb2ec;
+  --purp6: #c0a1e6;
   --pink: #fdf0ff;
   --pink2: #f2dcf5;
+
+  /* filter: invert(37%) sepia(73%) saturate(3819%) hue-rotate(337deg) brightness(107%) contrast(107%); */
+  --red: #ff3c41;
+}
+
+@font-face {
+  font-family: "Share Tech Mono";
+  src: url("./assets/ShareTechMono.ttf");
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 body, html, #root {
@@ -25,7 +43,7 @@ body, html, #root {
 
 h1, h2, h3, h4, h5, p, button, input, span, div, a {
   font-weight: normal;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, Arial, sans-serif;
+  font-family: "Share Tech Mono", monospace;
 }
 
 a {
