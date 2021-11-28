@@ -14,14 +14,15 @@
   color: var(--purp2);
   width: 60px;
   height: 60px;
-  font-size: 30px;
-  font-family: monospace;
+  font-size: 33px;
   line-height: 60px;
   border-radius: 5px;
   display: inline-block;
   margin: 2px;
   text-align: center;
   transition: all 0.2s;
+  user-select: none;
+  outline-color: var(--purp)
 }
 #wasd-keys .key.active {
   color: var(--purp);

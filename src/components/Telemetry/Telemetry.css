@@ -1,11 +1,20 @@
 #telemetry {
-  flex: 3 0;
-  align-self: flex-end;
+  flex: 3 0 264px;
+  
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
 }
+
 #robot-wrapper {
   width: 260px;
   height: 360px;
   position: relative;
+  
+  /* Compensates for #head */
+  top: 100px;
 }
 
 #robot-wrapper #head {
@@ -23,7 +32,7 @@
 #robot-wrapper .wheel {
   width: 60px;
   height: 90px;
-  border: 1px solid #d6c1f2;
+  border: 1px solid var(--purp2);
   border-radius: 5px;
   position: absolute;
 }
@@ -49,4 +58,36 @@
   background-color: #d6c1f2;
   transform-origin: bottom;
   transition: transform 0.15s;
+}
+
+#robot-wrapper #connection-status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% - 30px), -50%);
+}
+#robot-wrapper #connection-status.connecting img,
+#robot-wrapper #connection-status.open img {
+
+  /* purp6 */
+  filter: invert(74%) sepia(8%) saturate(1533%) hue-rotate(222deg) brightness(95%) contrast(92%);
+  
+  /* purp5 */
+  /* filter: invert(79%) sepia(13%) saturate(1419%) hue-rotate(211deg) brightness(95%) contrast(94%); */
+}
+#robot-wrapper #buzzer img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + 30px), -50%);
+  height: 48px;
+  width: 48px;
+
+  /* purp5 */
+  filter: invert(79%) sepia(13%) saturate(1419%) hue-rotate(211deg) brightness(95%) contrast(94%);
+  transition: filter 0.1s;
+}
+#robot-wrapper #buzzer img.active {
+  /* purp */
+  filter: invert(36%) sepia(30%) saturate(978%) hue-rotate(220deg) brightness(91%) contrast(90%);
 }

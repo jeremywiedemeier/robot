@@ -1,9 +1,21 @@
 import React, { createContext } from "react";
 import { useDispatch } from "react-redux";
-import { setTelemetry } from "./AppSlice";
+import { setSocketReadyState, setTelemetry } from "./AppSlice";
 import { WEBSOCKET_URL } from "./resources";
 
 const WebSocketContext = createContext<ContextValue>({ socket: null });
+
+const getWebSocketReadyState = (readyState: number | undefined) => {
+  switch (readyState) {
+    case 0:
+      return "connecting";
+    case 1:
+      return "open";
+    case 3:
+    default:
+      return "closed";
+  }
+};
 
 export { WebSocketContext };
 
@@ -12,18 +24,22 @@ const WebSocketProvider: React.FC = ({ children }) => {
 
   let socket: WebSocket | null = null;
 
-  if (!socket) {
-    console.log("opening websocket");
+  const connectWebSocket = () => {
+    dispatch(setSocketReadyState("connecting"));
     socket = new WebSocket(WEBSOCKET_URL);
     socket.onopen = () => {
-      console.log("websocket opened");
+      dispatch(setSocketReadyState(getWebSocketReadyState(socket?.readyState)));
     };
     socket.onmessage = (evt) => {
       dispatch(setTelemetry(JSON.parse(evt.data)));
     };
     socket.onclose = () => {
-      console.log("websocket closed");
+      dispatch(setSocketReadyState(getWebSocketReadyState(socket?.readyState)));
     };
+  };
+
+  if (!socket) {
+    connectWebSocket();
   }
 
   return (
