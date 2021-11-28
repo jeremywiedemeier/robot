@@ -20,6 +20,7 @@ const Controller: React.FC = () => {
     activeKeys: [],
     wheelPower: DEFAULT_WHEEL_POWER,
     servo: { x: 90 },
+    controlMode: "manual",
   });
 
   useEffect(addEventListeners(setControlState, socket), []);
@@ -31,6 +32,25 @@ const Controller: React.FC = () => {
       <div id="module-wrapper">
         <WASDKeys activeKeys={controlState.activeKeys} />
         <PowerControls setControlState={setControlState} />
+
+        <div id="control-mode-selector">
+          {(["manual", "random"] as ControlState["controlMode"][]).map(
+            (controlMode) => (
+              <button
+                type="button"
+                key={controlMode}
+                className={
+                  controlState.controlMode === controlMode ? "active" : ""
+                }
+                onClick={() => {
+                  setControlState({ ...controlState, controlMode });
+                }}
+              >
+                {controlMode.slice(0, 1).toUpperCase() + controlMode.slice(1)}
+              </button>
+            )
+          )}
+        </div>
       </div>
     </div>
   );

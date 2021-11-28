@@ -1,16 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const Head: React.FC<{ angle: number; distance: number }> = ({
   angle,
   distance,
 }) => {
   const isClose = distance < 10 && distance !== 0;
+
+  useEffect(() => {
+    if (distance !== 0) {
+      document.getElementById("head")?.classList.remove("fade");
+      setTimeout(() => {
+        document.getElementById("head")?.classList.add("fade");
+      }, 100);
+    }
+  }, [distance]);
+
   return (
     <div
       id="head"
+      className="fade"
       style={{
         transform: `translate(-50%, -100%) rotate(${angle - 90}deg)`,
-        borderColor: isClose ? "var(--red)" : "var(--purp2)",
       }}
     >
       <span

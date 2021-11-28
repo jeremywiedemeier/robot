@@ -1,6 +1,6 @@
 
 #power-controls {
-  min-height: 90px;
+  min-height: 92px;
   padding: 0 0 10px 0;
   display: flex;
   align-items: flex-end;
@@ -15,14 +15,14 @@
 }
 #power-controls #up-down-arrow {
   position: absolute;
-  top: 0;
+  top: 4px;
   left: 8px;
   height: 36px;
   width: 36px;
 }
 #power-controls #turning-arrow {
   position: absolute;
-  top: 4px;
+  top: 8px;
   left: 105px;
   height: 30px;
   width: 30px;

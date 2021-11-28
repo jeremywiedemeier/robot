@@ -14,21 +14,28 @@
   max-width: 260px;
   max-height: 360px;
   position: relative;
-  
+
   /* Compensates for #head */
   top: 100px;
 }
 
 #robot-wrapper #head {
-  border-bottom: 2px solid var(--purp2);
   height: 200px;
   width: 150px;
   clip-path: polygon(5% 0, 95% 0, 70% 100%, 30% 100%);
-  background: var(--purp4);
   position: absolute;
   top: 3%;
   left: 50%;
   transform-origin: bottom;
+  
+  background: var(--purp3);
+  border-bottom: 2px solid var(--purp7);
+  transition: background 0s, border-color 0s;
+}
+#robot-wrapper #head.fade {
+  background: var(--purp4);
+  border-color: var(--purp2);
+  transition: background 1s, border-color 1s;
 }
 #robot-wrapper #head span {
   position: absolute;

@@ -11,6 +11,7 @@ export interface ControlState {
     p2: number;
   };
   servo: { x: number };
+  controlMode: "manual" | "random";
 }
 
 // Controls sent to the server every time controlState changes
@@ -19,6 +20,7 @@ export interface Input {
   servo: { x: number };
   buzzer: { active: boolean };
   ultrasound: { active: boolean };
+  control_mode: string;
 }
 
 const controlStateToInput = (controlState: ControlState): Input => {
@@ -49,7 +51,9 @@ const controlStateToInput = (controlState: ControlState): Input => {
     active: controlState.activeKeys.includes("z"),
   };
 
-  return { motor, servo, buzzer, ultrasound };
+  const { controlMode } = controlState;
+
+  return { motor, servo, buzzer, ultrasound, control_mode: controlMode };
 };
 
 const handleKeyDown =
@@ -97,6 +101,9 @@ const handleKeyDown =
         )
           ? currentControlState.activeKeys
           : [...currentControlState.activeKeys, key];
+
+        // For controlMode, if any keys are pressed, switch to "manual"
+        newControlState.controlMode = "manual";
 
         if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify(controlStateToInput(newControlState)));
