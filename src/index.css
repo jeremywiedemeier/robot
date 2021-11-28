@@ -1,8 +1,3 @@
-* {
-  padding: 0;
-  margin: 0;
-}
-
 :root {
   --white: #f4f0ff;
   --black: #333333;
@@ -14,6 +9,7 @@
   --purp4: #e5d8f7;
   --purp5: #ccb2ec;
   --purp6: #c0a1e6;
+  --purp7: #644797;
   --pink: #fdf0ff;
   --pink2: #f2dcf5;
 
@@ -32,16 +28,23 @@
   }
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
 body, html, #root {
   height: 100%;
-  width: 100%;
   background-color: var(--white);
   color: var(--black);
   overflow-x: hidden;
   transition: background-color 0.2s;
 }
 
-h1, h2, h3, h4, h5, p, button, input, span, div, a {
+h1, h2, h3, h4, h5, p, button, input, span, div, a, textarea, select {
   font-weight: normal;
   font-family: "Share Tech Mono", monospace;
 }
@@ -56,4 +59,9 @@ button {
   border: 2px solid transparent;
   background-color: transparent;
   cursor: pointer;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
 }

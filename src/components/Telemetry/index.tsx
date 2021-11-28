@@ -11,7 +11,7 @@ import { selectTelemetry } from "../../AppSlice";
 import "./Telemetry.css";
 
 const Telemetry: React.FC = () => {
-  const { motor, servo, buzzer } = useSelector(selectTelemetry);
+  const { motor, servo, buzzer, ultrasound } = useSelector(selectTelemetry);
 
   return (
     <div id="telemetry">
@@ -20,7 +20,7 @@ const Telemetry: React.FC = () => {
         <Wheel duty={motor.fr} />
         <Wheel duty={motor.bl} />
         <Wheel duty={motor.br} />
-        <Head angle={servo.x} />
+        <Head angle={servo.x} distance={ultrasound.last_measurement} />
         <ConnectionStatus />
         <Buzzer active={buzzer.active} />
       </div>

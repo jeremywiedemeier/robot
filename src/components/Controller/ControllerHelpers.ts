@@ -2,6 +2,7 @@ const MOTOR_DUTY_MAX = 4095;
 
 const CONTROL_KEYS = ["q", "w", "e", "a", "s", "d", "z", "x", "c"];
 
+// Stores activeKeys and state variables that need to persist after activeKeys
 export interface ControlState {
   activeKeys: string[];
   wheelPower: {
@@ -12,10 +13,12 @@ export interface ControlState {
   servo: { x: number };
 }
 
+// Controls sent to the server every time controlState changes
 export interface Input {
   motor: { fl: number; fr: number; bl: number; br: number };
   servo: { x: number };
   buzzer: { active: boolean };
+  ultrasound: { active: boolean };
 }
 
 const controlStateToInput = (controlState: ControlState): Input => {
@@ -42,7 +45,11 @@ const controlStateToInput = (controlState: ControlState): Input => {
     active: controlState.activeKeys.includes("c"),
   };
 
-  return { motor, servo, buzzer };
+  const ultrasound: Input["ultrasound"] = {
+    active: controlState.activeKeys.includes("z"),
+  };
+
+  return { motor, servo, buzzer, ultrasound };
 };
 
 const handleKeyDown =
@@ -162,7 +169,7 @@ export const addEventListeners =
     setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
     socket: WebSocket | null
   ) =>
-  () => {
+  (): (() => void) => {
     document.addEventListener(
       "keydown",
       handleKeyDown(setControlState, socket)

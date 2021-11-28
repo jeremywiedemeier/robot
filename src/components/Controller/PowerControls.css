@@ -1,0 +1,38 @@
+
+#power-controls {
+  min-height: 90px;
+  padding: 0 0 10px 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  position: relative;
+}
+#power-controls img {
+  /* purp2 */
+  filter: invert(81%) sepia(13%) saturate(6326%) hue-rotate(203deg) brightness(94%) contrast(91%);
+  height: 38px;
+  width: 38px;
+}
+#power-controls #up-down-arrow {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  height: 36px;
+  width: 36px;
+}
+#power-controls #turning-arrow {
+  position: absolute;
+  top: 4px;
+  left: 105px;
+  height: 30px;
+  width: 30px;
+}
+#power-controls input {
+  height: 35px;
+  width: 50px;
+  border: 1px solid var(--purp3);
+  outline-color: var(--purp);
+  text-align: center;
+  color: var(--purp2);
+  font-size: 18px;
+}
