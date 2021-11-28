@@ -3,14 +3,19 @@ import lgpio
 from PCA9685 import PCA9685
 
 
-def constrain_duty(num, lim):
-    return round(max(min(num, lim), -lim))
-
-
 class Motor:
     def __init__(self):
         self.pwm = PCA9685(0x40, debug=True)
         self.pwm.set_pwm_freq(50)
+        self.duty_max = 4095
+    
+    def constrain_duty(self, duty):
+      result = min(duty, self.duty_max)
+      result = max(result, -1 * self.duty_max)
+      result = round(result)
+      # Negative because motors were wired backwards (?)
+      result = result * -1
+      return result
 
     def control_left_upper_wheel(self, duty):
         if duty > 0:
@@ -20,8 +25,8 @@ class Motor:
             self.pwm.set_motor_pwm(1, 0)
             self.pwm.set_motor_pwm(0, abs(duty))
         else:
-            self.pwm.set_motor_pwm(0, 4095)
-            self.pwm.set_motor_pwm(1, 4095)
+            self.pwm.set_motor_pwm(0, self.duty_max)
+            self.pwm.set_motor_pwm(1, self.duty_max)
 
     def control_left_lower_wheel(self, duty):
         if duty > 0:
@@ -31,8 +36,8 @@ class Motor:
             self.pwm.set_motor_pwm(2, 0)
             self.pwm.set_motor_pwm(3, abs(duty))
         else:
-            self.pwm.set_motor_pwm(2, 4095)
-            self.pwm.set_motor_pwm(3, 4095)
+            self.pwm.set_motor_pwm(2, self.duty_max)
+            self.pwm.set_motor_pwm(3, self.duty_max)
 
     def control_right_upper_wheel(self, duty):
         if duty > 0:
@@ -42,8 +47,8 @@ class Motor:
             self.pwm.set_motor_pwm(7, 0)
             self.pwm.set_motor_pwm(6, abs(duty))
         else:
-            self.pwm.set_motor_pwm(6, 4095)
-            self.pwm.set_motor_pwm(7, 4095)
+            self.pwm.set_motor_pwm(6, self.duty_max)
+            self.pwm.set_motor_pwm(7, self.duty_max)
 
     def control_right_lower_wheel(self, duty):
         if duty > 0:
@@ -53,14 +58,14 @@ class Motor:
             self.pwm.set_motor_pwm(5, 0)
             self.pwm.set_motor_pwm(4, abs(duty))
         else:
-            self.pwm.set_motor_pwm(4, 4095)
-            self.pwm.set_motor_pwm(5, 4095)
+            self.pwm.set_motor_pwm(4, self.duty_max)
+            self.pwm.set_motor_pwm(5, self.duty_max)
 
     def set_duty(self, duty1, duty2, duty3, duty4):
-        self.control_left_upper_wheel(-constrain_duty(duty1, 4095))
-        self.control_left_lower_wheel(-constrain_duty(duty2, 4095))
-        self.control_right_upper_wheel(-constrain_duty(duty3, 4095))
-        self.control_right_lower_wheel(-constrain_duty(duty4, 4095))
+        self.control_left_upper_wheel(self.constrain_duty(duty1))
+        self.control_left_lower_wheel(self.constrain_duty(duty2))
+        self.control_right_upper_wheel(self.constrain_duty(duty3))
+        self.control_right_lower_wheel(self.constrain_duty(duty4))
 
 
 class Servo:

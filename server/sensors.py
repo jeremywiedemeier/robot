@@ -8,47 +8,48 @@ class Ultrasonic:
         self.echo_pin = 22
         self.handle = lgpio.gpiochip_open(0)
         lgpio.gpio_claim_output(self.handle, self.trigger_pin)
-        lgpio.gpio_claim_output(self.handle, self.echo_pin)
+        lgpio.gpio_claim_input(self.handle, self.echo_pin)
         lgpio.gpio_write(self.handle, self.trigger_pin, 0)
+
+        self.FUDGE_FACTOR = 1.0684
 
     def close_pins(self):
         lgpio.gpio_write(self.handle, self.trigger_pin, 0)
+        lgpio.gpiochip_close(self.handle)
 
-    def wait_for_echo(self, timeout):
-        count = timeout
-        while lgpio.gpio_read(self.handle, self.echo_pin) == False and count > 0:
-            count = count - 1
-        print("count", count)
-
+    # Returns distance in centimeters
     def get_distance(self):
-        distance_cm = [0, 0, 0, 0, 0]
+        lgpio.gpio_write(self.handle, self.trigger_pin, 1)
+        time.sleep(0.15 / 1000)
+        lgpio.gpio_write(self.handle, self.trigger_pin, 0)
 
-        for i in range(1):
+        # Wait for pulse on echo pin
+        while lgpio.gpio_read(self.handle, self.echo_pin) == 0:
+            continue
 
-            # Send trigger pulse
-            lgpio.gpio_write(self.handle, self.trigger_pin, 1)
-            time.sleep(0.00015)
-            lgpio.gpio_write(self.handle, self.trigger_pin, 0)
+        # Measure echo pulse length
+        count = 0
+        start = time.time()
+        while lgpio.gpio_read(self.handle, self.echo_pin) == 1 and count < 10000:
+            count += 1
+        finish = time.time()
 
-            start = time.time()
-            # Countdown too fast?
-            self.wait_for_echo(10000)
-            finish = time.time()
-
-            print("time: ", finish - start)
-
-            distance_cm[i] = (finish - start) / 0.000058
-
-        return distance_cm
-
-        # Return median value
-        # return int(sorted(distance_cm)[2])
+        # Using speed of ultrasound in air 330 m/s
+        return (finish - start) / 2 * 33000 * self.FUDGE_FACTOR
 
 
 if __name__ == "__main__":
     ultrasonic = Ultrasonic()
     try:
-        print(ultrasonic.get_distance())
+        trials = 30
+        distances = [0 for _ in range(trials)]
+        for i in range(trials):
+            time.sleep(100 / 1000)
+            distances[i] = ultrasonic.get_distance()
+            print(i, ") Distance(cm): ", distances[i])
+
+        print("Average: ", sum(distances) / len(distances))
+
         ultrasonic.close_pins()
     except:
         ultrasonic.close_pins()
