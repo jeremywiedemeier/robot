@@ -5,7 +5,7 @@ from sensors import *
 if __name__ == "__main__":
     servo = Servo()
     motor = Motor()
-    ultrasonic = Ultrasonic()
+    ultrasound = Ultrasound()
     buzzer = Buzzer()
 
     if sys.argv[1] == "servo":
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         except:
             motor.set_duty(0, 0, 0, 0)
 
-    elif sys.argv[1] == "ultrasonic":
+    elif sys.argv[1] == "ultrasound":
       try:
         print("hi")
       except:

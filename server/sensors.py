@@ -2,7 +2,7 @@ import time
 import lgpio
 
 
-class Ultrasonic:
+class Ultrasound:
     def __init__(self):
         self.trigger_pin = 27
         self.echo_pin = 22
@@ -11,6 +11,7 @@ class Ultrasonic:
         lgpio.gpio_claim_input(self.handle, self.echo_pin)
         lgpio.gpio_write(self.handle, self.trigger_pin, 0)
 
+        self.is_measuring = False
         self.FUDGE_FACTOR = 1.0684
 
     def close_pins(self):
@@ -19,6 +20,12 @@ class Ultrasonic:
 
     # Returns distance in centimeters
     def get_distance(self):
+
+        if self.is_measuring == True:
+            return None
+
+        self.is_measuring = True
+
         lgpio.gpio_write(self.handle, self.trigger_pin, 1)
         time.sleep(0.15 / 1000)
         lgpio.gpio_write(self.handle, self.trigger_pin, 0)
@@ -34,22 +41,24 @@ class Ultrasonic:
             count += 1
         finish = time.time()
 
+        self.is_measuring = False
+
         # Using speed of ultrasound in air 330 m/s
         return (finish - start) / 2 * 33000 * self.FUDGE_FACTOR
 
 
 if __name__ == "__main__":
-    ultrasonic = Ultrasonic()
+    ultrasound = Ultrasound()
     try:
-        trials = 30
+        trials = 10
         distances = [0 for _ in range(trials)]
         for i in range(trials):
             time.sleep(100 / 1000)
-            distances[i] = ultrasonic.get_distance()
+            distances[i] = ultrasound.get_distance()
             print(i, ") Distance(cm): ", distances[i])
 
         print("Average: ", sum(distances) / len(distances))
 
-        ultrasonic.close_pins()
+        ultrasound.close_pins()
     except:
-        ultrasonic.close_pins()
+        ultrasound.close_pins()
