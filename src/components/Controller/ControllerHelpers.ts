@@ -1,5 +1,14 @@
 const MOTOR_DUTY_MAX = 4095;
 
+export const DEFAULT_WHEEL_POWER = {
+  p0: 800, // Forward/Reverse -- all wheel power
+  p1: 2000, // Turning -- outside wheel power
+  p2: 800, // Turning -- inside wheel power
+};
+
+export const TIME_DELTA = 200; // milliseconds
+export const MIN_DIST = 40; // centimeters
+
 const CONTROL_KEYS = ["q", "w", "e", "a", "s", "d", "z", "x", "c"];
 
 // Stores activeKeys and state variables that need to persist after activeKeys
@@ -12,7 +21,20 @@ export interface ControlState {
   };
   servo: { x: number };
   controlMode: "manual" | "random";
+  random: {
+    stage: "travelling" | "turning";
+  };
 }
+
+export const DEFAULT_CONTROL_STATE: ControlState = {
+  activeKeys: [],
+  wheelPower: DEFAULT_WHEEL_POWER,
+  servo: { x: 90 },
+  controlMode: "manual",
+  random: {
+    stage: "travelling",
+  },
+};
 
 // Controls sent to the server every time controlState changes
 export interface Input {
@@ -23,7 +45,7 @@ export interface Input {
   control_mode: string;
 }
 
-const controlStateToInput = (controlState: ControlState): Input => {
+export const controlStateToInput = (controlState: ControlState): Input => {
   const { p0, p1, p2 } = controlState.wheelPower;
   let motor: Input["motor"] = { fl: 0, fr: 0, bl: 0, br: 0 };
 
@@ -41,7 +63,9 @@ const controlStateToInput = (controlState: ControlState): Input => {
     motor = { fl: p0, fr: p0, bl: p0, br: p0 };
   }
 
-  const servo: Input["servo"] = { x: controlState.servo.x };
+  const servo: Input["servo"] = {
+    x: controlState.servo.x,
+  };
 
   const buzzer: Input["buzzer"] = {
     active: controlState.activeKeys.includes("c"),
@@ -57,10 +81,7 @@ const controlStateToInput = (controlState: ControlState): Input => {
 };
 
 const handleKeyDown =
-  (
-    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
-    socket: WebSocket | null
-  ) =>
+  (setControlState: React.Dispatch<React.SetStateAction<ControlState>>) =>
   (evt: Event) => {
     const key =
       (evt as KeyboardEvent).key ||
@@ -105,19 +126,12 @@ const handleKeyDown =
         // For controlMode, if any keys are pressed, switch to "manual"
         newControlState.controlMode = "manual";
 
-        if (socket && socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify(controlStateToInput(newControlState)));
-        }
-
         return newControlState;
       });
   };
 
 const handleKeyUp =
-  (
-    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
-    socket: WebSocket | null
-  ) =>
+  (setControlState: React.Dispatch<React.SetStateAction<ControlState>>) =>
   (evt: Event) => {
     const keyToRemove =
       (evt as KeyboardEvent).key ||
@@ -134,109 +148,64 @@ const handleKeyUp =
           ),
         };
 
-        if (socket && socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify(controlStateToInput(newControlState)));
-        }
         return newControlState;
       });
   };
 
 const handleMouseDown =
-  (
-    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
-    socket: WebSocket | null
-  ) =>
+  (setControlState: React.Dispatch<React.SetStateAction<ControlState>>) =>
   (evt: Event) => {
-    handleKeyDown(setControlState, socket)(evt);
+    handleKeyDown(setControlState)(evt);
   };
 
 const handleMouseUp =
-  (
-    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
-    socket: WebSocket | null
-  ) =>
+  (setControlState: React.Dispatch<React.SetStateAction<ControlState>>) =>
   (evt: Event) => {
-    handleKeyUp(setControlState, socket)(evt);
+    handleKeyUp(setControlState)(evt);
   };
 
 const handleTouchStart =
-  (
-    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
-    socket: WebSocket | null
-  ) =>
+  (setControlState: React.Dispatch<React.SetStateAction<ControlState>>) =>
   (evt: Event) => {
     evt.preventDefault();
 
-    handleKeyDown(setControlState, socket)(evt);
+    handleKeyDown(setControlState)(evt);
   };
 const handleTouchEnd = handleMouseUp;
 
 export const addEventListeners =
-  (
-    setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
-    socket: WebSocket | null
-  ) =>
+  (setControlState: React.Dispatch<React.SetStateAction<ControlState>>) =>
   (): (() => void) => {
-    document.addEventListener(
-      "keydown",
-      handleKeyDown(setControlState, socket)
-    );
-    document.addEventListener("keyup", handleKeyUp(setControlState, socket));
+    document.addEventListener("keydown", handleKeyDown(setControlState));
+    document.addEventListener("keyup", handleKeyUp(setControlState));
 
     Array.from(document.getElementsByClassName("key")).forEach((element) => {
-      element.addEventListener(
-        "mousedown",
-        handleMouseDown(setControlState, socket)
-      );
-      element.addEventListener(
-        "mouseup",
-        handleMouseUp(setControlState, socket)
-      );
-      element.addEventListener(
-        "touchstart",
-        handleTouchStart(setControlState, socket)
-      );
-      element.addEventListener(
-        "touchend",
-        handleTouchEnd(setControlState, socket)
-      );
+      element.addEventListener("mousedown", handleMouseDown(setControlState));
+      element.addEventListener("mouseup", handleMouseUp(setControlState));
+      element.addEventListener("touchstart", handleTouchStart(setControlState));
+      element.addEventListener("touchend", handleTouchEnd(setControlState));
     });
 
     return () => {
-      document.removeEventListener(
-        "keydown",
-        handleKeyDown(setControlState, socket)
-      );
-      document.removeEventListener(
-        "keyup",
-        handleKeyUp(setControlState, socket)
-      );
+      document.removeEventListener("keydown", handleKeyDown(setControlState));
+      document.removeEventListener("keyup", handleKeyUp(setControlState));
       Array.from(document.getElementsByClassName("key")).forEach((element) => {
         element.removeEventListener(
           "mousedown",
-          handleMouseDown(setControlState, socket)
+          handleMouseDown(setControlState)
         );
-        element.removeEventListener(
-          "mouseup",
-          handleMouseUp(setControlState, socket)
-        );
+        element.removeEventListener("mouseup", handleMouseUp(setControlState));
         element.removeEventListener(
           "touchstart",
-          handleTouchStart(setControlState, socket)
+          handleTouchStart(setControlState)
         );
         element.removeEventListener(
           "touchend",
-          handleTouchEnd(setControlState, socket)
+          handleTouchEnd(setControlState)
         );
       });
     };
   };
-
-export const DEFAULT_WHEEL_POWER = {
-  p0: 1200, // Forward/Reverse -- all wheel power
-  p1: 2000, // Turning -- outside wheel power
-  p2: 800, // Turning -- inside wheel power
-};
 
 export const validatePower = (
   powerIndex: "p0" | "p1" | "p2",

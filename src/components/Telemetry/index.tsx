@@ -20,7 +20,7 @@ const Telemetry: React.FC = () => {
         <Wheel duty={motor.fr} />
         <Wheel duty={motor.bl} />
         <Wheel duty={motor.br} />
-        <Head angle={servo.x} distance={ultrasound.last_measurement} />
+        <Head angle={servo.x} distance={ultrasound.last_measurement || 0} />
         <ConnectionStatus />
         <Buzzer active={buzzer.active} />
       </div>

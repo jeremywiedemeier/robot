@@ -19,8 +19,7 @@ interface AppState {
       active: boolean;
     };
     ultrasound: {
-      measuring: boolean;
-      last_measurement: number;
+      last_measurement: number | null;
     };
   };
 }
@@ -31,7 +30,7 @@ const initialState: AppState = {
     motor: { fl: 0, fr: 0, bl: 0, br: 0 },
     servo: { x: 90 },
     buzzer: { active: false },
-    ultrasound: { measuring: false, last_measurement: 0 },
+    ultrasound: { last_measurement: null },
   },
 };
 

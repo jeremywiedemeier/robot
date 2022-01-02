@@ -39,9 +39,10 @@
   padding: 10px 0;
   width: 100%;
   border-radius: 10px;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
-#control-mode-selector button.active {
+#control-mode-selector button.active, #control-mode-selector button:hover {
   color: var(--purp7);
   background-color: var(--white);
+  border-color: var(--purp2);
 }

@@ -9,12 +9,10 @@ import WebSocketProvider from "./WebSocket";
 import "./index.css";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <WebSocketProvider>
-        <App />
-      </WebSocketProvider>
-    </Provider>
-  </React.StrictMode>,
+  <Provider store={store}>
+    <WebSocketProvider>
+      <App />
+    </WebSocketProvider>
+  </Provider>,
   document.getElementById("root")
 );
