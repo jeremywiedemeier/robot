@@ -2,6 +2,7 @@ const MOTOR_DUTY_MAX = 4095;
 
 const CONTROL_KEYS = ["q", "w", "e", "a", "s", "d", "z", "x", "c"];
 
+// Stores activeKeys and state variables that need to persist after activeKeys
 export interface ControlState {
   activeKeys: string[];
   wheelPower: {
@@ -10,12 +11,16 @@ export interface ControlState {
     p2: number;
   };
   servo: { x: number };
+  controlMode: "manual" | "random";
 }
 
+// Controls sent to the server every time controlState changes
 export interface Input {
   motor: { fl: number; fr: number; bl: number; br: number };
   servo: { x: number };
   buzzer: { active: boolean };
+  ultrasound: { active: boolean };
+  control_mode: string;
 }
 
 const controlStateToInput = (controlState: ControlState): Input => {
@@ -42,7 +47,13 @@ const controlStateToInput = (controlState: ControlState): Input => {
     active: controlState.activeKeys.includes("c"),
   };
 
-  return { motor, servo, buzzer };
+  const ultrasound: Input["ultrasound"] = {
+    active: controlState.activeKeys.includes("z"),
+  };
+
+  const { controlMode } = controlState;
+
+  return { motor, servo, buzzer, ultrasound, control_mode: controlMode };
 };
 
 const handleKeyDown =
@@ -90,6 +101,9 @@ const handleKeyDown =
         )
           ? currentControlState.activeKeys
           : [...currentControlState.activeKeys, key];
+
+        // For controlMode, if any keys are pressed, switch to "manual"
+        newControlState.controlMode = "manual";
 
         if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify(controlStateToInput(newControlState)));
@@ -162,7 +176,7 @@ export const addEventListeners =
     setControlState: React.Dispatch<React.SetStateAction<ControlState>>,
     socket: WebSocket | null
   ) =>
-  () => {
+  (): (() => void) => {
     document.addEventListener(
       "keydown",
       handleKeyDown(setControlState, socket)

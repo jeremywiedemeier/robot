@@ -1,57 +1,47 @@
 #controller {
-  flex: 2 0 246px;
-
+  flex: 2 0;
   position: relative;
-
   background-color: var(--pink);
   border-right: 1px solid var(--pink2);
-  
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 60px;
 }
 
 #controller #connection-status {
   position: absolute;
   top: 15px;
-  right: 25px;
+  right: 5px;
 }
 
-#power-controls {
-  height: 80px;
+#controller #module-wrapper {
   display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-height: 440px;
 }
-#power-controls img {
-  /* purp2 */
-  filter: invert(81%) sepia(13%) saturate(6326%) hue-rotate(203deg) brightness(94%) contrast(91%);
-  height: 38px;
-  width: 38px;
+
+#control-mode-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex: 1;
+  max-height: 96px;
 }
-#power-controls #up-down-arrow {
-  position: absolute;
-  top: 0;
-  left: 8px;
-  height: 36px;
-  width: 36px;
-}
-#power-controls #turning-arrow {
-  position: absolute;
-  top: 4px;
-  left: 105px;
-  height: 30px;
-  width: 30px;
-}
-#power-controls input {
-  height: 35px;
-  width: 50px;
-  border: 1px solid var(--purp3);
+#control-mode-selector button {
   outline-color: var(--purp);
-  text-align: center;
+  border: 1px solid var(--purp3);
   color: var(--purp2);
-  font-size: 18px;
+  padding: 10px 0;
+  width: 100%;
+  border-radius: 10px;
+  transition: color 0.2s;
+}
+#control-mode-selector button.active {
+  color: var(--purp7);
+  background-color: var(--white);
 }

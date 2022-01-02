@@ -1,3 +1,8 @@
+#wasd-keys {
+  min-width: 242px;
+  padding: 10px 0 0 0;
+}
+
 #wasd-keys > div {
   width: fit-content;
 }
